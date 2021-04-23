@@ -18,6 +18,11 @@ export class CreateConnections1619145882822 implements MigrationInterface {
                         isNullable: true
                     },
                     {
+                        name:"socket_id",
+                        type:"uuid",
+
+                    },
+                    {
                         name:"user_id",
                         type:"uuid",
 
