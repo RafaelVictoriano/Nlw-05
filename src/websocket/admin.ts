@@ -27,12 +27,20 @@ io.on("connect", async (socket) => {
             admin_id: socket.id
         })
         const {socket_id} = await connectionService.findByUserId(user_id)
-        io.to (socket_id).emit("admin_send_to_client", {
+        io.to(socket_id).emit("admin_send_to_client", {
             text,
             socket_id
 
-         })
+        })
     })
 
+    socket.on("admin_user_in_support", async (params) => {
+        const {user_id} = params
+        await connectionService.updateAdminId(user_id, socket.id)
+
+        const allConnectionsWhithoutAdmin = await connectionService.findAllWhithoutAdmin()
+        io.emit("admin_list_all_users", allConnectionsWhithoutAdmin)
+
+    })
 
 })

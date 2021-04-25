@@ -23,6 +23,7 @@ io.on("connect", (socket) => {
                 user_id: user.id
             })
             user_id = user.id
+
         } else {
             user_id = userExists.id
             const connection = await connectionService.findByUserId(userExists.id)
@@ -44,9 +45,28 @@ io.on("connect", (socket) => {
             user_id
         })
 
-        const allMessages = await  messagesService.listByUser(user_id)
-
+        const allMessages = await messagesService.listByUser(user_id)
         socket.emit("client_list_all_message", allMessages)
 
+        const allUsers = await connectionService.findAllWhithoutAdmin();
+        io.emit("admin_list_all_users", allUsers)
+
     })
+
+    socket.on("client_send_to_admin", async (params) => {
+        const {text, socket_admin_id} = params
+        const socket_id = socket.id
+
+        const {user_id} = await connectionService.findBySocketId(socket_id)
+
+        const message = await messagesService.create({
+            text,
+            user_id
+        });
+
+        io.to(socket_admin_id).emit("admin_receive_message", {
+            message,
+            socket_id
+        })
+    });
 })
