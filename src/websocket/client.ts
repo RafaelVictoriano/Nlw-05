@@ -26,6 +26,7 @@ io.on("connect", (socket) => {
         } else {
             user_id = userExists.id
             const connection = await connectionService.findByUserId(userExists.id)
+
             if (!connection) {
                 await connectionService.create({
                     socket_id,
@@ -36,15 +37,16 @@ io.on("connect", (socket) => {
 
                 await connectionService.create(connection)
             }
-
-            await messagesService.create({
-                text,
-                user_id
-            })
-
-
         }
 
+        await messagesService.create({
+            text,
+            user_id
+        })
+
+        const allMessages = await  messagesService.listByUser(user_id)
+
+        socket.emit("client_list_all_message", allMessages)
 
     })
 })

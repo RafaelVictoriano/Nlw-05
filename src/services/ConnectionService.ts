@@ -10,29 +10,39 @@ interface IConnectionCreate {
 }
 
 class ConnectionService {
-    private connectionRespository: Repository<Connection>;
+    private connectionRepository: Repository<Connection>;
 
     constructor() {
-        this.connectionRespository = getCustomRepository(ConnectionsRespository)
+        this.connectionRepository = getCustomRepository(ConnectionsRespository)
     }
 
     async create({socket_id, user_id, admin_id, id}: IConnectionCreate) {
-        const connection = this.connectionRespository.create({
+        const connection = this.connectionRepository.create({
             socket_id,
             user_id,
             admin_id,
             id
         })
 
-        await this.connectionRespository.save(connection)
+        await this.connectionRepository.save(connection)
 
         return connection
     }
 
     async findByUserId(user_id: string) {
-        const connection = await this.connectionRespository.findOne(user_id)
+        const connection = await this.connectionRepository.findOne({ user_id })
 
         return connection
+    }
+
+    async  findAllWhithoutAdmin() {
+        const  connections = await this.connectionRepository.find({
+            where: {admin_id: null},
+            relations: ["user"]
+        })
+
+        return connections
+
     }
 
 

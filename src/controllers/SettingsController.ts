@@ -20,13 +20,23 @@ class SettingsController {
 
     async findByUsername(request: Request, response: Response){
         const {username} = request.params
-        const { chat } = request.params
 
         const settingsService = new SettingsService()
 
         const setting = await settingsService.findByUsername(username)
 
-        return response.json
+        return response.json(setting)
+    }
+
+    async update(request: Request, response: Response){
+        const {username} = request.params
+        const { chat } = request.body
+
+        const settingsService = new SettingsService()
+
+        const setting = await settingsService.update(username, chat)
+
+        return response.json(setting)
     }
 
 }
